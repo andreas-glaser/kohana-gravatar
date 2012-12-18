@@ -8,11 +8,23 @@ class Kohana_Gravatar_Avatar
     protected $str_email, $str_rating, $int_image_size, $str_image_default, $bool_image_default_force;
     protected $bool_https = TRUE;
 
+    /**
+     * Retuns new \Gravatar_Avatar object
+     * 
+     * @param array $arr_params
+     * @return \Gravatar_Avatar
+     */
     public static function factory(array $arr_params = array())
     {
         return new Gravatar_Avatar($arr_params);
     }
 
+    /**
+     * Constructor forces execution of $this->setup()
+     * 
+     * @param array $arr_params
+     * @return \Kohana_Gravatar_Avatar
+     */
     public function __construct(array $arr_params = array())
     {
         // execute setup method
@@ -22,6 +34,12 @@ class Kohana_Gravatar_Avatar
         return $this;
     }
 
+    /**
+     * Helps to load default settings passed by array
+     * 
+     * @param array $arr_params
+     * @return \Kohana_Gravatar_Avatar
+     */
     public function setup(array $arr_params = array())
     {
         foreach ($arr_params AS $key => $value)
@@ -38,6 +56,11 @@ class Kohana_Gravatar_Avatar
         return $this;
     }
 
+    /**
+     * Resets all properties. This functon helps to reuse object for another gravatar request.
+     * 
+     * @return \Kohana_Gravatar_Avatar
+     */
     public function reset()
     {
         // reset properties
@@ -48,6 +71,11 @@ class Kohana_Gravatar_Avatar
         return $this;
     }
 
+    /**
+     * Returns gravatar URL based on passed settings.
+     * 
+     * @return string
+     */
     protected function make_url()
     {
         // validate object
@@ -76,11 +104,25 @@ class Kohana_Gravatar_Avatar
         return $url;
     }
 
+    /**
+     * Public function returning $this->make_url();
+     * 
+     * @return string
+     */
     public function url()
     {
         return $this->make_url();
     }
 
+    /**
+     * Returns html code e.g.
+     * <img src="htp://someurl" />
+     * 
+     * @param array $attributes
+     * @param boolean $protocol
+     * @param boolean $index
+     * @return string
+     */
     public function image(array $attributes = NULL, $protocol = NULL, $index = FALSE)
     {
         // set auto attributes
@@ -96,10 +138,16 @@ class Kohana_Gravatar_Avatar
         return HTML::image($this->make_url(), $attributes, $protocol, $index);
     }
 
-    public function download($str_destination = 'tmp')
+    /**
+     * Downloads gravatar to location on server. Defaults to tmp directory.
+     * 
+     * @param mixed $str_destination
+     * @return \stdClass
+     */
+    public function download($str_destination = NULL)
     {
         // get tmp direcoty
-        if (strtolower($str_destination) === 'tmp' || !$str_destination)
+        if (!$str_destination)
         {
             $str_destination = sys_get_temp_dir();
         }
@@ -183,6 +231,12 @@ class Kohana_Gravatar_Avatar
         return $result;
     }
 
+    /**
+     * Checks whether all necessary properties have been set correclty.
+     * 
+     * @param boolean $throw_exceptions
+     * @return boolean
+     */
     public function validate($throw_exceptions = TRUE)
     {
         // init var
@@ -243,31 +297,12 @@ class Kohana_Gravatar_Avatar
         return $bool_is_valid;
     }
 
-    public function https($bool_https)
-    {
-        // make sure passed image size is integer
-        if (!is_bool($bool_https))
-        {
-            $this->exception('https needs to be TRUE of FALSE');
-        }
-
-        // set property
-        $this->bool_https = $bool_https;
-
-        // return this
-        return $this;
-    }
-
-    public function https_true()
-    {
-        return $this->https(TRUE);
-    }
-
-    public function https_false()
-    {
-        return $this->https(FALSE);
-    }
-
+    /**
+     * Sets used email address.
+     * 
+     * @param string $str_email
+     * @return \Kohana_Gravatar_Avatar
+     */
     public function email($str_email)
     {
         // trim leading/trailing white spaces
@@ -421,6 +456,47 @@ class Kohana_Gravatar_Avatar
     public function image_default_blank()
     {
         return $this->image_default('blank');
+    }
+
+    /**
+     * Defines whether https ot http should be used to query image.
+     * 
+     * @param boolean $bool_https
+     * @return \Kohana_Gravatar_Avatar
+     */
+    public function https($bool_https)
+    {
+        // make sure passed image size is integer
+        if (!is_bool($bool_https))
+        {
+            $this->exception('https needs to be TRUE of FALSE');
+        }
+
+        // set property
+        $this->bool_https = $bool_https;
+
+        // return this
+        return $this;
+    }
+
+    /**
+     * Enables https
+     * 
+     * @return \Kohana_Gravatar_Avatar
+     */
+    public function https_true()
+    {
+        return $this->https(TRUE);
+    }
+
+    /**
+     * Enables http
+     * 
+     * @return \Kohana_Gravatar_Avatar
+     */
+    public function https_false()
+    {
+        return $this->https(FALSE);
     }
 
     /**
